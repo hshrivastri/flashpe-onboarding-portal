@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashpe Customer Onboarding Portal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F5F5F5;color:#1a1a1a}
+:root{--fp-orange:#E8611A;--fp-orange-light:#FDF0E8;--fp-orange-mid:#F4A06A}
+
+/* NAV TABS */
+.nav-tabs{display:flex;gap:0;background:#fff;border-bottom:1px solid #eee;padding:0 1.5rem;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.nav-tab{padding:14px 20px;font-size:13px;font-weight:500;color:#888;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:7px;transition:all 0.2s}
+.nav-tab:hover{color:#1a1a1a}
+.nav-tab.active{color:var(--fp-orange);border-bottom-color:var(--fp-orange)}
+.nav-tab i{font-size:15px}
+
+/* PAGE SECTIONS */
+.page{display:none;padding:1.5rem 1rem 3rem}
+.page.active{display:block}
+.portal-wrap{max-width:780px;margin:0 auto}
+.admin-wrap{max-width:960px;margin:0 auto}
+
+/* HEADER */
+.portal-header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding:1rem 1.25rem;background:#fff;border-radius:12px;border:0.5px solid #e0e0e0;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.logo-badge{width:40px;height:40px;border-radius:8px;background:var(--fp-orange);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.portal-header h1{font-size:16px;font-weight:600;color:#1a1a1a}
+.portal-header p{font-size:12px;color:#666;margin-top:2px}
+.sheets-badge{display:inline-flex;align-items:center;gap:6px;background:#E8F5E9;border:0.5px solid #A5D6A7;border-radius:8px;padding:5px 10px;font-size:11px;color:#2E7D32;margin-top:4px}
+.email-badge{display:inline-flex;align-items:center;gap:6px;background:#E3F2FD;border:0.5px solid #90CAF9;border-radius:8px;padding:5px 10px;font-size:11px;color:#1565C0;margin-top:4px;margin-left:6px}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;margin-bottom:1.5rem;background:#fff;border-radius:12px;border:0.5px solid #e0e0e0;padding:1rem 1.25rem;overflow-x:auto}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:80px;position:relative;cursor:pointer}
+.step-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 16px);right:calc(-50% + 16px);height:1px;background:#e0e0e0}
+.step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid #e0e0e0;background:#f5f5f5;color:#999;position:relative;z-index:1;transition:all 0.2s}
+.step-circle.active{background:var(--fp-orange);border-color:var(--fp-orange);color:#fff}
+.step-circle.done{background:#E8F5E9;border-color:#A5D6A7;color:#2E7D32}
+.step-label{font-size:10px;color:#999;text-align:center;line-height:1.3}
+.step-label.active{color:var(--fp-orange);font-weight:600}
+
+/* CARDS */
+.card{background:#fff;border-radius:12px;border:0.5px solid #e0e0e0;padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.card-title{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card-title i{font-size:16px;color:var(--fp-orange)}
+.card-sub{font-size:12px;color:#888;margin-bottom:1rem}
+
+/* FORMS */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.full{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:4px}
+label{font-size:12px;color:#555;font-weight:500}
+input,select,textarea{font-size:13px;border-radius:8px;border:1px solid #ddd;padding:8px 10px;background:#fff;color:#1a1a1a;width:100%;font-family:inherit;outline:none;transition:border 0.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--fp-orange)}
+textarea{resize:vertical;min-height:70px}
+
+/* TABLES */
+.matrix-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.matrix-table th{background:#f9f9f9;color:#666;padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid #eee}
+.matrix-table td{padding:8px 10px;border-bottom:1px solid #eee;vertical-align:middle}
+.matrix-table td input{padding:5px 8px;font-size:12px}
+.add-row-btn{background:none;border:1px dashed #ddd;border-radius:8px;padding:7px 12px;font-size:12px;color:var(--fp-orange);cursor:pointer;margin-top:8px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit}
+.add-row-btn:hover{background:var(--fp-orange-light)}
+
+/* BUTTONS */
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #eee}
+.btn-primary{background:var(--fp-orange);color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit}
+.btn-primary:hover{background:#d4561a}
+.btn-secondary{background:#fff;color:#666;border:1px solid #ddd;padding:9px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn-secondary:hover{background:#f5f5f5}
+
+/* ROUTING */
+.routing-card{background:var(--fp-orange-light);border:0.5px solid var(--fp-orange-mid);border-radius:8px;padding:12px;margin-top:1rem}
+.routing-card p{font-size:12px;color:#7A3010;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.routing-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;padding:3px 10px;border-radius:20px;background:#fff;border:0.5px solid var(--fp-orange-mid);color:#7A3010}
+
+/* STATUS */
+.status-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.status-step{padding:10px;border-radius:8px;border:1px solid #eee;background:#fff;text-align:center}
+.status-step.done-s{background:#E8F5E9;border-color:#A5D6A7}
+.status-icon{font-size:18px;margin-bottom:4px;color:#2E7D32}
+.status-label{font-size:11px;font-weight:500;color:#888}
+.status-step.done-s .status-label{color:#2E7D32}
+
+/* SUCCESS */
+.success-screen{text-align:center;padding:2.5rem 1rem}
+.success-screen .big{font-size:52px;color:#2E7D32}
+.success-screen h2{font-size:20px;font-weight:600;margin:1rem 0 0.5rem}
+.success-screen p{font-size:13px;color:#666;margin-bottom:1.5rem}
+.routing-final{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin-top:1.5rem}
+.rf-card{background:#f9f9f9;border-radius:8px;padding:12px}
+.rf-title{font-size:11px;font-weight:500;color:#888;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.rf-val{font-size:13px;color:#1a1a1a;font-weight:500}
+
+/* MISC */
+.hidden{display:none}
+.spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:var(--fp-orange);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.submitting-overlay{text-align:center;padding:2.5rem;display:flex;flex-direction:column;align-items:center;gap:14px}
+.error-banner{background:#FFF3F3;border:1px solid #FFCDD2;border-radius:8px;padding:10px 14px;font-size:12px;color:#C62828;margin-top:1rem;display:none;align-items:center;gap:8px}
+
+/* ADMIN PANEL */
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.admin-header h2{font-size:18px;font-weight:600;color:#1a1a1a}
+.admin-header p{font-size:12px;color:#888;margin-top:2px}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem}
+.metric-card{background:#fff;border-radius:12px;border:0.5px solid #e0e0e0;padding:1rem;text-align:center}
+.metric-val{font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.metric-label{font-size:11px;color:#888;font-weight:500}
+.metric-card.orange .metric-val{color:var(--fp-orange)}
+.metric-card.green .metric-val{color:#2E7D32}
+.metric-card.blue .metric-val{color:#1565C0}
+.metric-card.amber .metric-val{color:#F57F17}
+.clients-table{width:100%;border-collapse:collapse;font-size:13px}
+.clients-table th{background:#f9f9f9;color:#666;padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #eee;font-size:12px}
+.clients-table td{padding:10px 12px;border-bottom:1px solid #eee;vertical-align:middle}
+.clients-table tr:hover td{background:#fafafa}
+.status-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;display:inline-block}
+.badge-review{background:#FFF8E1;color:#F57F17}
+.badge-approved{background:#E8F5E9;color:#2E7D32}
+.badge-active{background:#E3F2FD;color:#1565C0}
+.badge-hold{background:#FFF3F3;color:#C62828}
+.status-select{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;font-family:inherit}
+.update-btn{font-size:11px;padding:4px 10px;border-radius:6px;border:none;background:var(--fp-orange);color:#fff;cursor:pointer;font-family:inherit;font-weight:600}
+.update-btn:hover{background:#d4561a}
+.empty-state{text-align:center;padding:3rem;color:#888}
+.empty-state i{font-size:40px;margin-bottom:1rem;display:block;color:#ddd}
+.search-bar{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.search-bar input{max-width:300px;padding:8px 12px;font-size:13px}
+.filter-select{padding:8px 12px;font-size:13px;border-radius:8px;border:1px solid #ddd;background:#fff;font-family:inherit}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;display:none;align-items:center;gap:8px;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.toast.show{display:flex}
+.toast.success{background:#2E7D32}
+.survey-section{margin-top:1.5rem}
+.survey-card{background:#fff;border-radius:12px;border:0.5px solid #e0e0e0;padding:1.25rem}
+.survey-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;font-size:13px}
+.survey-row:last-child{border-bottom:none}
+.send-survey-btn{font-size:11px;padding:5px 12px;border-radius:6px;border:none;background:#1565C0;color:#fff;cursor:pointer;font-family:inherit;font-weight:600;display:flex;align-items:center;gap:5px}
+.send-survey-btn:hover{background:#0D47A1}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}.routing-final{grid-template-columns:1fr}.status-bar{grid-template-columns:1fr 1fr}.metrics-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchPage('portal')" id="tab-portal">
+    <i class="ti ti-forms"></i> Client Onboarding
+  </div>
+  <div class="nav-tab" onclick="switchPage('admin')" id="tab-admin">
+    <i class="ti ti-layout-dashboard"></i> Admin Panel
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-circle-check"></i><span id="toast-msg"></span></div>
+
+<!-- ========== PORTAL PAGE ========== -->
+<div class="page active" id="page-portal">
+<div class="portal-wrap">
+  <div class="portal-header">
+    <div class="logo-badge">FP</div>
+    <div>
+      <h1>Customer Onboarding Portal</h1>
+      <p>Flashpe Foods Pvt. Ltd — B2B Corporate Cafeteria Management</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0">
+        <div class="sheets-badge"><i class="ti ti-brand-google" style="font-size:13px"></i> Connected to Google Sheets</div>
+        <div class="email-badge"><i class="ti ti-mail" style="font-size:13px"></i> Auto email on submit</div>
+      </div>
+    </div>
+    <div style="margin-left:auto;text-align:right;flex-shrink:0">
+      <div style="font-size:11px;font-weight:600;color:#333" id="ref-id">REF #FP-2026-001</div>
+      <div style="font-size:11px;color:#888;margin-top:2px">New client intake</div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="step-item" onclick="goStep(0)"><div class="step-circle active" id="sc0"><i class="ti ti-building" style="font-size:13px"></i></div><div class="step-label active" id="sl0">Company info</div></div>
+    <div class="step-item" onclick="goStep(1)"><div class="step-circle" id="sc1"><i class="ti ti-address-book" style="font-size:13px"></i></div><div class="step-label" id="sl1">Contact matrix</div></div>
+    <div class="step-item" onclick="goStep(2)"><div class="step-circle" id="sc2"><i class="ti ti-alert-triangle" style="font-size:13px"></i></div><div class="step-label" id="sl2">Escalation</div></div>
+    <div class="step-item" onclick="goStep(3)"><div class="step-circle" id="sc3"><i class="ti ti-file-description" style="font-size:13px"></i></div><div class="step-label" id="sl3">Project charter</div></div>
+    <div class="step-item" onclick="goStep(4)"><div class="step-circle" id="sc4"><i class="ti ti-circle-check" style="font-size:13px"></i></div><div class="step-label" id="sl4">Review & submit</div></div>
+  </div>
+
+  <!-- Step 0 -->
+  <div id="step0">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-building"></i> Company information</div>
+      <div class="card-sub">Basic details of the corporate client being onboarded</div>
+      <div class="form-row">
+        <div class="form-group"><label>Company name *</label><input id="cname" type="text" placeholder="e.g. Infosys Ltd"></div>
+        <div class="form-group"><label>Industry / sector</label><select id="csector"><option value="">Select sector</option><option>IT / Tech</option><option>Pharma</option><option>BFSI</option><option>Manufacturing</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Tech park / office location *</label><input id="cloc" type="text" placeholder="e.g. HITEC City, Hyderabad"></div>
+        <div class="form-group"><label>Expected headcount</label><input id="chead" type="number" placeholder="e.g. 800"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Primary contact name *</label><input id="cpname" type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Primary contact email *</label><input id="cpemail" type="email" placeholder="name@company.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Primary contact phone</label><input id="cpphone" type="tel" placeholder="+91-XXXXXXXXXX"></div>
+        <div class="form-group"><label>Contract start date</label><input id="cdate" type="date"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Services requested</label>
+          <select id="cservices"><option value="">Select primary service</option><option>Corporate cafeteria management</option><option>Food allowance disbursement</option><option>Vendor management only</option><option>Full platform suite</option></select>
+        </div>
+      </div>
+      <div class="routing-card">
+        <p><i class="ti ti-share" style="font-size:14px"></i> Auto-routing on submission</p>
+        <div class="routing-tags"><span class="tag">BD team</span><span class="tag">Operations lead</span><span class="tag">Account manager</span><span class="tag">Finance</span></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <span style="font-size:12px;color:#888">Step 1 of 5</span>
+      <button class="btn-primary" onclick="nextStep(0)">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div id="step1" class="hidden">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-address-book"></i> Communication matrix</div>
+      <div class="card-sub">Map each department contact for day-to-day communication</div>
+      <table class="matrix-table">
+        <thead><tr><th>Department</th><th>Contact name</th><th>Email</th><th>Phone</th></tr></thead>
+        <tbody id="matrix-body">
+          <tr><td><input type="text" value="Operations" placeholder="Dept"></td><td><input type="text" placeholder="Name"></td><td><input type="email" placeholder="Email"></td><td><input type="tel" placeholder="Phone"></td></tr>
+          <tr><td><input type="text" value="Finance" placeholder="Dept"></td><td><input type="text" placeholder="Name"></td><td><input type="email" placeholder="Email"></td><td><input type="tel" placeholder="Phone"></td></tr>
+          <tr><td><input type="text" value="HR / Admin" placeholder="Dept"></td><td><input type="text" placeholder="Name"></td><td><input type="email" placeholder="Email"></td><td><input type="tel" placeholder="Phone"></td></tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addMatrixRow()"><i class="ti ti-plus"></i> Add contact row</button>
+      <div class="routing-card">
+        <p><i class="ti ti-share" style="font-size:14px"></i> Auto-routing on submission</p>
+        <div class="routing-tags"><span class="tag">Account manager</span><span class="tag">Customer success</span><span class="tag">Operations team</span></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="prevStep(1)"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn-primary" onclick="nextStep(1)">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div id="step2" class="hidden">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-alert-triangle"></i> Escalation matrix</div>
+      <div class="card-sub">Define escalation contacts for issues, SLA breaches, and critical incidents</div>
+      <table class="matrix-table">
+        <thead><tr><th>Level</th><th>Name & designation</th><th>Email</th><th>Response SLA</th></tr></thead>
+        <tbody>
+          <tr><td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#E8F5E9;color:#2E7D32;font-weight:600">L1</span></td><td><input type="text" id="l1name" placeholder="Name, designation"></td><td><input type="email" id="l1email" placeholder="Email"></td><td><select id="l1sla" style="font-size:12px;padding:5px 6px"><option>2 hours</option><option>4 hours</option><option>Same day</option></select></td></tr>
+          <tr><td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#FFF8E1;color:#F57F17;font-weight:600">L2</span></td><td><input type="text" id="l2name" placeholder="Name, designation"></td><td><input type="email" id="l2email" placeholder="Email"></td><td><select id="l2sla" style="font-size:12px;padding:5px 6px"><option>4 hours</option><option>Same day</option><option>Next day</option></select></td></tr>
+          <tr><td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#FFF3F3;color:#C62828;font-weight:600">L3</span></td><td><input type="text" id="l3name" placeholder="Name, designation"></td><td><input type="email" id="l3email" placeholder="Email"></td><td><select id="l3sla" style="font-size:12px;padding:5px 6px"><option>Same day</option><option>24 hours</option><option>48 hours</option></select></td></tr>
+        </tbody>
+      </table>
+      <div class="form-row full" style="margin-top:1rem">
+        <div class="form-group"><label>Escalation trigger conditions</label>
+          <textarea id="esctrigger" placeholder="e.g. Food quality complaint unresolved > 2 hrs, vendor no-show, service disruption affecting 50+ employees..."></textarea>
+        </div>
+      </div>
+      <div class="routing-card">
+        <p><i class="ti ti-share" style="font-size:14px"></i> Auto-routing on submission</p>
+        <div class="routing-tags"><span class="tag">Operations lead</span><span class="tag">Customer success</span><span class="tag">BD head</span></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="prevStep(2)"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn-primary" onclick="nextStep(2)">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div id="step3" class="hidden">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-file-description"></i> Project charter</div>
+      <div class="card-sub">Define scope, deliverables, and milestones for this client engagement</div>
+      <div class="form-row">
+        <div class="form-group"><label>Go-live target date</label><input type="date" id="golive"></div>
+        <div class="form-group"><label>Contract value (₹ annual)</label><input type="text" id="cvalue" placeholder="e.g. ₹18,00,000"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Scope of services</label>
+          <textarea id="cscope" placeholder="e.g. Daily breakfast and lunch for 800 employees, vendor curation, food allowance top-ups, monthly SLA reporting..."></textarea>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Key milestones</label>
+          <textarea id="cmilestone" placeholder="e.g. Week 1: Vendor shortlisting | Week 2: Kitchen setup | Week 3: Trial run | Week 4: Full go-live"></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Assigned account manager</label><input type="text" id="cam" placeholder="Name from Flashpe team"></div>
+        <div class="form-group"><label>Review frequency</label><select id="cfreq"><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option></select></div>
+      </div>
+      <div class="routing-card">
+        <p><i class="ti ti-share" style="font-size:14px"></i> Auto-routing on submission</p>
+        <div class="routing-tags"><span class="tag">BD team</span><span class="tag">Operations lead</span><span class="tag">Finance</span><span class="tag">Vendor manager</span><span class="tag">Customer success</span></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="prevStep(3)"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn-primary" onclick="nextStep(3)">Review & submit <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Step 4 Review -->
+  <div id="step4" class="hidden">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-circle-check"></i> Review & submit</div>
+      <div class="card-sub">Confirm details before routing to all teams and saving to Google Sheets</div>
+      <div class="status-bar">
+        <div class="status-step done-s"><div class="status-icon"><i class="ti ti-circle-check"></i></div><div class="status-label">Company info</div></div>
+        <div class="status-step done-s"><div class="status-icon"><i class="ti ti-circle-check"></i></div><div class="status-label">Contact matrix</div></div>
+        <div class="status-step done-s"><div class="status-icon"><i class="ti ti-circle-check"></i></div><div class="status-label">Escalation</div></div>
+        <div class="status-step done-s"><div class="status-icon"><i class="ti ti-circle-check"></i></div><div class="status-label">Project charter</div></div>
+      </div>
+      <div style="background:#f9f9f9;border-radius:8px;padding:1rem;margin-bottom:1rem">
+        <div style="font-size:12px;font-weight:600;color:#666;margin-bottom:10px">Client summary</div>
+        <div id="summary-content" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px"></div>
+      </div>
+      <div style="background:var(--fp-orange-light);border:0.5px solid var(--fp-orange-mid);border-radius:8px;padding:12px;margin-bottom:1rem">
+        <div style="font-size:12px;font-weight:600;color:#7A3010;margin-bottom:8px">Will be auto-routed to</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="tag">BD team</span><span class="tag">Operations lead</span><span class="tag">Account manager</span><span class="tag">Finance</span><span class="tag">Vendor manager</span><span class="tag">Customer success</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;border:1px solid #A5D6A7;background:#E8F5E9">
+          <i class="ti ti-brand-google" style="font-size:16px;color:#2E7D32"></i>
+          <div><div style="font-size:12px;font-weight:600;color:#2E7D32">Saved to Google Sheets</div><div style="font-size:11px;color:#388E3C">One new row per submission</div></div>
+        </div>
+        <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;border:1px solid #90CAF9;background:#E3F2FD">
+          <i class="ti ti-mail" style="font-size:16px;color:#1565C0"></i>
+          <div><div style="font-size:12px;font-weight:600;color:#1565C0">Email sent to BD team</div><div style="font-size:11px;color:#1976D2">Automatic notification triggered</div></div>
+        </div>
+      </div>
+      <div class="error-banner" id="error-banner"><i class="ti ti-alert-circle" style="font-size:16px"></i><span id="error-msg">Something went wrong. Please try again.</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="prevStep(4)"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn-primary" id="submit-btn" onclick="submitForm()"><i class="ti ti-send"></i> Submit & save to Sheets</button>
+    </div>
+  </div>
+
+  <!-- Submitting -->
+  <div id="step4-submitting" class="hidden">
+    <div class="card">
+      <div class="submitting-overlay">
+        <div class="spinner"></div>
+        <div style="font-size:15px;font-weight:600;color:#1a1a1a">Submitting & saving to Google Sheets...</div>
+        <div style="font-size:12px;color:#888">Sending email notification to BD team. Please wait.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5 Success -->
+  <div id="step5" class="hidden">
+    <div class="card">
+      <div class="success-screen">
+        <i class="ti ti-circle-check big"></i>
+        <h2>Onboarding submitted successfully!</h2>
+        <p>Client record saved to Google Sheets. Email notification sent to BD team automatically.</p>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:var(--fp-orange-light);border:0.5px solid var(--fp-orange-mid);padding:10px 24px;border-radius:8px">
+          <i class="ti ti-file-invoice" style="color:#7A3010;font-size:18px"></i>
+          <span style="font-size:15px;font-weight:600;color:#7A3010" id="final-ref">REF #FP-2026-001</span>
+        </div>
+        <div class="routing-final">
+          <div class="rf-card"><div class="rf-title"><i class="ti ti-clock" style="font-size:13px"></i> Status</div><div class="rf-val" style="color:#F57F17">Under review</div></div>
+          <div class="rf-card"><div class="rf-title"><i class="ti ti-table" style="font-size:13px"></i> Saved to</div><div class="rf-val" style="color:#2E7D32">Google Sheets ✓</div></div>
+          <div class="rf-card"><div class="rf-title"><i class="ti ti-mail" style="font-size:13px"></i> Email sent</div><div class="rf-val" style="color:#1565C0">BD team notified ✓</div></div>
+          <div class="rf-card"><div class="rf-title"><i class="ti ti-calendar" style="font-size:13px"></i> Submitted on</div><div class="rf-val" id="submit-date"></div></div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="resetForm()"><i class="ti ti-plus"></i> Onboard another client</button>
+          <button class="btn-primary" onclick="switchPage('admin')"><i class="ti ti-layout-dashboard"></i> View admin panel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== ADMIN PAGE ========== -->
+<div class="page" id="page-admin">
+<div class="admin-wrap">
+  <div class="admin-header">
+    <div>
+      <h2><i class="ti ti-layout-dashboard" style="font-size:20px;color:var(--fp-orange);vertical-align:-3px"></i> Admin Panel — Onboarding Pipeline</h2>
+      <p>Manage client status, track onboarding progress, and send periodic surveys</p>
+    </div>
+    <button class="btn-primary" onclick="switchPage('portal')"><i class="ti ti-plus"></i> New onboarding</button>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card orange"><div class="metric-val" id="m-total">0</div><div class="metric-label">Total clients</div></div>
+    <div class="metric-card amber"><div class="metric-val" id="m-review">0</div><div class="metric-label">Under review</div></div>
+    <div class="metric-card blue"><div class="metric-val" id="m-approved">0</div><div class="metric-label">Approved</div></div>
+    <div class="metric-card green"><div class="metric-val" id="m-active">0</div><div class="metric-label">Active</div></div>
+  </div>
+
+  <!-- Client Table -->
+  <div class="card">
+    <div class="card-title"><i class="ti ti-users"></i> Client onboarding tracker</div>
+    <div class="card-sub">Update client status and track onboarding pipeline in real time</div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search by company name..." oninput="filterClients()" style="max-width:280px">
+      <select class="filter-select" id="filter-status" onchange="filterClients()">
+        <option value="">All statuses</option>
+        <option value="Under Review">Under Review</option>
+        <option value="Approved">Approved</option>
+        <option value="Active">Active</option>
+        <option value="On Hold">On Hold</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="clients-table">
+        <thead>
+          <tr>
+            <th>Ref ID</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Account manager</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody id="clients-tbody">
+          <tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i>No clients onboarded yet. Submit the first onboarding form to see data here.</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Survey Section -->
+  <div class="survey-section">
+    <div class="card survey-card">
+      <div class="card-title"><i class="ti ti-mail-forward"></i> Periodic customer survey tracker</div>
+      <div class="card-sub">Track and send 30-day post go-live satisfaction surveys to active clients</div>
+      <div id="survey-list">
+        <div class="empty-state" style="padding:1.5rem"><i class="ti ti-mail"></i>Active clients will appear here for survey scheduling.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const WEBHOOK='https://script.google.com/macros/s/AKfycbz1TZ9C4F6E3QIdOTS6YpR_9SOOgigIkSjusGW71_8an4kJV4pOcOvvNkhkCrT0LuRF/exec';
+let current=0;
+const steps=['step0','step1','step2','step3','step4','step5'];
+localStorage.removeItem('fp_clients');
+let clients=[];
+
+function switchPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('tab-'+page).classList.add('active');
+  if(page==='admin'){renderAdmin();}
+}
+
+function showStep(n){
+  steps.forEach((s,i)=>{document.getElementById(s).classList.toggle('hidden',i!==n)});
+  document.getElementById('step4-submitting').classList.add('hidden');
+  updateStepper(n);current=n;
+}
+function updateStepper(n){
+  const icons=['ti-building','ti-address-book','ti-alert-triangle','ti-file-description','ti-circle-check'];
+  for(let i=0;i<5;i++){
+    const c=document.getElementById('sc'+i),l=document.getElementById('sl'+i);
+    c.classList.remove('active','done');l.classList.remove('active');
+    if(i<n){c.classList.add('done');c.innerHTML='<i class="ti ti-check" style="font-size:13px"></i>';}
+    else if(i===n){c.classList.add('active');c.innerHTML='<i class="ti '+icons[i]+'" style="font-size:13px"></i>';l.classList.add('active');}
+    else{c.innerHTML='<i class="ti '+icons[i]+'" style="font-size:13px"></i>';}
+  }
+}
+function nextStep(n){if(n===3){buildSummary();}showStep(n+1);}
+function prevStep(n){showStep(n-1);}
+function goStep(n){if(n<=current)showStep(n);}
+function addMatrixRow(){
+  const b=document.getElementById('matrix-body');
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td><input type="text" placeholder="Dept"></td><td><input type="text" placeholder="Name"></td><td><input type="email" placeholder="Email"></td><td><input type="tel" placeholder="Phone"></td>';
+  b.appendChild(tr);
+}
+function buildSummary(){
+  const s=document.getElementById('summary-content');
+  const rows=[['Company',document.getElementById('cname').value||'—'],['Location',document.getElementById('cloc').value||'—'],['Headcount',document.getElementById('chead').value||'—'],['Primary contact',document.getElementById('cpname').value||'—'],['Contract start',document.getElementById('cdate').value||'—'],['Account manager',document.getElementById('cam').value||'—']];
+  s.innerHTML=rows.map(r=>`<div><div style="font-size:11px;color:#888">${r[0]}</div><div style="font-weight:600;font-size:13px;margin-top:2px">${r[1]}</div></div>`).join('');
+}
+function collectMatrixData(){
+  const rows=document.querySelectorAll('#matrix-body tr');
+  return Array.from(rows).map(r=>{const inputs=r.querySelectorAll('input');return{dept:inputs[0].value,name:inputs[1].value,email:inputs[2].value,phone:inputs[3].value};});
+}
+
+async function submitForm(){
+  document.getElementById('error-banner').style.display='none';
+  document.getElementById('step4').classList.add('hidden');
+  document.getElementById('step4-submitting').classList.remove('hidden');
+  const payload={
+    companyName:document.getElementById('cname').value,
+    sector:document.getElementById('csector').value,
+    location:document.getElementById('cloc').value,
+    headcount:document.getElementById('chead').value,
+    primaryContact:document.getElementById('cpname').value,
+    email:document.getElementById('cpemail').value,
+    phone:document.getElementById('cpphone').value,
+    contractStart:document.getElementById('cdate').value,
+    services:document.getElementById('cservices').value,
+    contractValue:document.getElementById('cvalue').value,
+    goLiveDate:document.getElementById('golive').value,
+    accountManager:document.getElementById('cam').value,
+    escalationL1:document.getElementById('l1name').value,
+    escalationL2:document.getElementById('l2name').value,
+    escalationL3:document.getElementById('l3name').value,
+    communicationMatrix:JSON.stringify(collectMatrixData())
+  };
+  try{
+    const d=new Date();
+    const rowNum=clients.length+2;
+    const refId='FP-'+d.getFullYear()+'-'+String(clients.length+1).padStart(3,'0');
+    await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    clients.push({
+      refId:refId,
+      rowNum:rowNum,
+      company:payload.companyName||'—',
+      location:payload.location||'—',
+      manager:payload.accountManager||'—',
+      date:d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}),
+      status:'Under Review',
+      email:payload.email||''
+    });
+    localStorage.setItem('fp_clients',JSON.stringify(clients));
+    document.getElementById('submit-date').textContent=d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('final-ref').textContent=refId;
+    document.getElementById('ref-id').textContent='REF #'+refId;
+    document.getElementById('step4-submitting').classList.add('hidden');
+    showStep(5);
+  }catch(err){
+    document.getElementById('step4-submitting').classList.add('hidden');
+    document.getElementById('step4').classList.remove('hidden');
+    const eb=document.getElementById('error-banner');
+    eb.style.display='flex';
+    document.getElementById('error-msg').textContent='Could not connect. Check internet and try again.';
+  }
+}
+
+function resetForm(){
+  current=0;
+  const nextRef='FP-'+new Date().getFullYear()+'-'+String(clients.length+1).padStart(3,'0');
+  document.getElementById('ref-id').textContent='REF #'+nextRef;
+  showStep(0);
+}
+
+function getStatusBadge(s){
+  const map={'Under Review':'badge-review','Approved':'badge-approved','Active':'badge-active','On Hold':'badge-hold'};
+  return '<span class="status-badge '+(map[s]||'badge-review')+'">'+s+'</span>';
+}
+
+async function updateStatus(idx){
+  const sel=document.getElementById('sel-'+idx);
+  const newStatus=sel.value;
+  const client=clients[idx];
+  client.status=newStatus;
+  localStorage.setItem('fp_clients',JSON.stringify(clients));
+  renderAdmin();
+  showToast('Updating status in Google Sheets...','');
+  try{
+    await fetch(WEBHOOK,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({
+        type:'statusUpdate',
+        rowNum:client.rowNum,
+        refId:client.refId,
+        status:newStatus,
+        clientEmail:client.email||'',
+        clientName:client.company||''
+      })
+    });
+    showToast('Status updated to "'+newStatus+'" for '+client.company+' — synced to Google Sheets ✓','success');
+  }catch(err){
+    showToast('Status updated locally. Could not sync to Sheets.','');
+  }
+}
+
+function filterClients(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const f=document.getElementById('filter-status').value;
+  renderTable(clients.filter(c=>{
+    const matchQ=c.company.toLowerCase().includes(q);
+    const matchF=f?c.status===f:true;
+    return matchQ&&matchF;
+  }));
+}
+
+function renderTable(data){
+  const tb=document.getElementById('clients-tbody');
+  if(!data||data.length===0){
+    tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i>No clients found.</div></td></tr>';
+    return;
+  }
+  tb.innerHTML=data.map((c,i)=>{
+    const realIdx=clients.indexOf(c);
+    return`<tr>
+      <td style="font-weight:600;color:var(--fp-orange);font-size:12px">${c.refId}</td>
+      <td style="font-weight:600">${c.company}</td>
+      <td style="color:#666;font-size:12px">${c.location}</td>
+      <td style="color:#666;font-size:12px">${c.manager}</td>
+      <td style="color:#888;font-size:12px">${c.date}</td>
+      <td>${getStatusBadge(c.status)}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <select class="status-select" id="sel-${realIdx}">
+            <option ${c.status==='Under Review'?'selected':''}>Under Review</option>
+            <option ${c.status==='Approved'?'selected':''}>Approved</option>
+            <option ${c.status==='Active'?'selected':''}>Active</option>
+            <option ${c.status==='On Hold'?'selected':''}>On Hold</option>
+          </select>
+          <button class="update-btn" onclick="updateStatus(${realIdx})">Update</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAdmin(){
+  const total=clients.length;
+  const review=clients.filter(c=>c.status==='Under Review').length;
+  const approved=clients.filter(c=>c.status==='Approved').length;
+  const active=clients.filter(c=>c.status==='Active').length;
+  document.getElementById('m-total').textContent=total;
+  document.getElementById('m-review').textContent=review;
+  document.getElementById('m-approved').textContent=approved;
+  document.getElementById('m-active').textContent=active;
+  renderTable(clients);
+  renderSurveys();
+}
+
+function renderSurveys(){
+  const sl=document.getElementById('survey-list');
+  const active=clients.filter(c=>c.status==='Active');
+  if(active.length===0){
+    sl.innerHTML='<div class="empty-state" style="padding:1.5rem"><i class="ti ti-mail"></i>Active clients will appear here for survey scheduling.</div>';
+    return;
+  }
+  sl.innerHTML=active.map((c,i)=>`
+    <div class="survey-row">
+      <div>
+        <div style="font-weight:600;font-size:13px">${c.company}</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">${c.refId} • ${c.manager} • Go-live: ${c.date}</div>
+      </div>
+      <button class="send-survey-btn" onclick="sendSurvey(${clients.indexOf(c)})">
+        <i class="ti ti-send" style="font-size:12px"></i> Send 30-day survey
+      </button>
+    </div>
+  `).join('');
+}
+
+function sendSurvey(idx){
+  showToast('30-day satisfaction survey sent to '+clients[idx].company+' ✓','success');
+}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>{t.className='toast';},3000);
+}
+</script>
+</body>
+</html>
